@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -24,6 +25,12 @@ public class FitnessPlaceActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     FirebaseDatabase database;
+    private String fitnessPlace;
+    private FirebaseUser currentUser;
+
+    // ui
+    private TextView textViewFitnessPlace;
+    private Button buttonJoin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,18 +46,21 @@ public class FitnessPlaceActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         // firebase database
         database = FirebaseDatabase.getInstance();
+
+        // intent extras (params)
+        fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+
+        // ui
+        textViewFitnessPlace = (TextView) findViewById(R.id.textViewFitnessPlace);
+        buttonJoin = (Button) findViewById(R.id.buttonJoin);
+
+        initUi();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // Check if user is signed
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            Log.i("USER", currentUser.toString());
-        } else {
-            Log.i("USER", "not logged in");
-        }
+        this.currentUser = mAuth.getCurrentUser();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -75,6 +85,25 @@ public class FitnessPlaceActivity extends AppCompatActivity {
 
     public void joinTraining() {
 //        database.getReference("trainings").child(new Date().toString()).push();
+    }
+
+    public void initUi() {
+        textViewFitnessPlace.setText(fitnessPlace);
+        buttonJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    joinTraining();
+                } else {
+                    startLoginActivity();
+                }
+            }
+        });
+    }
+
+    public void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 
 }
