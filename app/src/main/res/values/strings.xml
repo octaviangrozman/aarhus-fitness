@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">AarhusFitness</string>
+    <string name="title_activity_fitness_place">FitnessPlaceActivity</string>
+    <string name="action_map">See map</string>
+</resources>
