@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "13074636057",
+    "firebase_url": "https://aarhusfitness.firebaseio.com",
+    "project_id": "aarhusfitness",
+    "storage_bucket": "aarhusfitness.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:13074636057:android:81cbe330f6c21166",
+        "android_client_info": {
+          "package_name": "com.example.octav.aarhusfitness"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "13074636057-5rvr1g6778glra6d87a8nfsrgogngsf2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.octav.aarhusfitness",
+            "certificate_hash": "59163593e2549383611d8205d1d312d5989aef58"
+          }
+        },
+        {
+          "client_id": "13074636057-okusqhoob1716ucj6lcfrh2d9opm15lt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzf7nRZmZEdtymHRVZ8Dx_1RdhfseH8rM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "13074636057-okusqhoob1716ucj6lcfrh2d9opm15lt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
