@@ -2,35 +2,26 @@ package com.example.octav.aarhusfitness;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.util.Date;
-
 public class FitnessPlaceActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     FirebaseDatabase database;
-    private String fitnessPlace;
+    private String fitnessPlace = "";
     private FirebaseUser currentUser;
-
-    // ui
-    private TextView textViewFitnessPlace;
-    private Button buttonJoin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +31,8 @@ public class FitnessPlaceActivity extends AppCompatActivity {
         // set up toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Fitness");
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) actionBar.setTitle("Fitness");
 
         // firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -48,13 +40,26 @@ public class FitnessPlaceActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
 
         // intent extras (params)
-        fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+        }
 
         // ui
-        textViewFitnessPlace = (TextView) findViewById(R.id.textViewFitnessPlace);
-        buttonJoin = (Button) findViewById(R.id.buttonJoin);
+        TextView textViewFitnessPlace = (TextView) findViewById(R.id.textViewFitnessPlace);
+        textViewFitnessPlace.setText(fitnessPlace);
 
-        initUi();
+        Button buttonJoin = (Button) findViewById(R.id.buttonJoin);
+        buttonJoin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentUser != null) {
+                    joinTraining();
+                } else {
+                    startLoginActivity();
+                }
+            }
+        });
     }
 
     @Override
@@ -85,20 +90,6 @@ public class FitnessPlaceActivity extends AppCompatActivity {
 
     public void joinTraining() {
 //        database.getReference("trainings").child(new Date().toString()).push();
-    }
-
-    public void initUi() {
-        textViewFitnessPlace.setText(fitnessPlace);
-        buttonJoin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (currentUser != null) {
-                    joinTraining();
-                } else {
-                    startLoginActivity();
-                }
-            }
-        });
     }
 
     public void startLoginActivity() {

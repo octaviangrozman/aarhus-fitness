@@ -4,19 +4,14 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.octav.aarhusfitness.model.FitnessApiResponse;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -37,15 +32,17 @@ import retrofit2.Response;
 public class HomeActivity extends FragmentActivity implements
         OnMapReadyCallback {
 
+    public static final double AARHUS_LATITUDE = 56.162939;
+    public static final double AARHUS_LONGITUDE = 10.203921;
+    public static final int MAP_ZOOM = 10;
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -83,29 +80,37 @@ public class HomeActivity extends FragmentActivity implements
 
         App.getApi().getData().enqueue(new Callback<FitnessApiResponse>() {
             @Override
-            public void onResponse(Call<FitnessApiResponse> call, Response<FitnessApiResponse> response) {
-                List<FitnessApiResponse.Feature> features = response.body().getFeatures();
-                              if (features != null) {
-                    for (FitnessApiResponse.Feature feature : features) {
-                        List<Double> coordinates = feature.getGeometry().getCoordinates();
-                        LatLng latLng = new LatLng(coordinates.get(1), coordinates.get(0));
-                        MarkerOptions marker = new MarkerOptions()
-                                .position(latLng)
-                                .title("Fitness place")
-                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
-                                .snippet(feature.getProperties().getNavn());
-                        mMap.addMarker(marker);
+            public void onResponse(@NonNull Call<FitnessApiResponse> call, @NonNull Response<FitnessApiResponse> response) {
+                FitnessApiResponse responseBody = response.body();
+                if (responseBody != null) {
+                    List<FitnessApiResponse.Feature> features = responseBody.getFeatures();
+                    if (features != null) {
+                        for (FitnessApiResponse.Feature feature : features) {
+                            List<Double> coordinates = feature.getGeometry().getCoordinates();
+                            LatLng latLng = new LatLng(coordinates.get(1), coordinates.get(0));
+                            MarkerOptions marker = createMarker(feature, latLng);
+                            mMap.addMarker(marker);
+                        }
+                        LatLng aarhusCoordinates = new LatLng(AARHUS_LATITUDE, AARHUS_LONGITUDE);
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(aarhusCoordinates, MAP_ZOOM));
                     }
-                    LatLng aarhus = new LatLng(56.162939, 10.203921);
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(aarhus, 10));
                 }
             }
 
             @Override
-            public void onFailure(Call<FitnessApiResponse> call, Throwable t) {
+            public void onFailure(@NonNull Call<FitnessApiResponse> call, @NonNull Throwable t) {
                 Log.e("ERROR", t.getMessage());
             }
         });
+    }
+
+    @NonNull
+    private MarkerOptions createMarker(FitnessApiResponse.Feature feature, LatLng latLng) {
+        return new MarkerOptions()
+                                    .position(latLng)
+                                    .title("Fitness place")
+                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
+                                    .snippet(feature.getProperties().getNavn());
     }
 
 }
