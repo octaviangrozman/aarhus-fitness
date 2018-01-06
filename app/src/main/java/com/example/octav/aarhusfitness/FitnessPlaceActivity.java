@@ -32,7 +32,11 @@ public class FitnessPlaceActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) actionBar.setTitle("Fitness");
+        if (actionBar != null) {
+            actionBar.setTitle("Fitness");
+        }
+
+        this.invalidateOptionsMenu();
 
         // firebase auth
         mAuth = FirebaseAuth.getInstance();
@@ -70,6 +74,8 @@ public class FitnessPlaceActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
+        MenuItem accountMenuItem = menu.findItem(R.id.action_account);
+        if (accountMenuItem != null) accountMenuItem.setVisible(false);
         inflater.inflate(R.menu.toolbar, menu);
         return true;
     }

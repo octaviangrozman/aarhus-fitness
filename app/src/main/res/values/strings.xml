@@ -3,6 +3,7 @@
     <string name="title_activity_fitness_place">FitnessPlaceActivity</string>
     <string name="action_map">See map</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="account">Your Account</string>
 
     <!-- Strings related to sign in -->
     <string name="prompt_email">Email</string>
@@ -21,4 +22,7 @@
     <!-- Strings related to sign up -->
     <string name="action_sign_up">Sign up</string>
     <string name="prompt_confirm_password">Confirm password</string>
+
+    <!-- Google O-Auth client id -->
+    <!--<string name="default_web_client_id">762107523730-03mcsfsvv5r935teb3sla9adell6bn7g.apps.googleusercontent.com</string>-->
 </resources>
