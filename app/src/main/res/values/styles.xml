@@ -17,4 +17,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="Autocomplete">
+        <item name="colorControlNormal">@color/textColor</item>
+        <item name="colorControlActivated">@color/textColor</item>
+        <item name="colorControlHighlight">@color/textColor</item>
+    </style>
+
+    <style name="hintText">
+        <item name="android:textSize">11dp</item>
+    </style>
+
 </resources>

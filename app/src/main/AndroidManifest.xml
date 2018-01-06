@@ -37,12 +37,7 @@
 
         <activity
             android:name=".HomeActivity"
-            android:label="Fitness" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:label="Fitness">
         </activity>
 
         <activity
@@ -53,8 +48,15 @@
         </activity>
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login" />
-        <activity android:name=".SignUpActivity"></activity>
+            android:label="@string/title_activity_login">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".SignUpActivity">
+        </activity>
     </application>
 
 </manifest>
