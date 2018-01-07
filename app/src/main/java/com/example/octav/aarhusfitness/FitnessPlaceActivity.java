@@ -12,7 +12,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.octav.aarhusfitness.model.MyDate;
+import com.example.octav.aarhusfitness.model.MyTime;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
@@ -21,12 +24,16 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 
-public class FitnessPlaceActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener, TimePickerDialog.OnTimeSetListener {
+public class FitnessPlaceActivity extends AppCompatActivity
+        implements DatePickerDialog.OnDateSetListener,
+            TimePickerDialog.OnTimeSetListener {
 
     private FirebaseAuth mAuth;
     FirebaseDatabase database;
     private String fitnessPlace = "";
     private FirebaseUser currentUser;
+    private MyDate selectedDate;
+    private MyTime selectedTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,7 +108,6 @@ public class FitnessPlaceActivity extends AppCompatActivity implements DatePicke
 
     public void joinTraining() {
         showDatePicker();
-//        database.getReference("trainings").child(new Date().toString()).push();
     }
 
     private void showDatePicker() {
@@ -130,22 +136,32 @@ public class FitnessPlaceActivity extends AppCompatActivity implements DatePicke
         timePicker.show(getFragmentManager(), "Timepickerdialog");
     }
 
-
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         String date = "You picked the following date: "+dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
         Log.i("DATEPICKER", date);
+        selectedDate = new MyDate(dayOfMonth, monthOfYear, year);
         showTimePicker();
-    }
-
-    public void startLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
     }
 
     @Override
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
         String time = "You picked the following time: "+hourOfDay+"h"+minute+"m"+second;
         Log.i("TIMEPICKER", time);
+        selectedTime = new MyTime(hourOfDay, minute, second);
+        saveTraining();
+    }
+
+    private void saveTraining() {
+        String userUid = mAuth.getCurrentUser().getUid();
+        Log.d("date", selectedDate.toString());
+        database.getReference("trainings").child(fitnessPlace).child(selectedDate.toString()).child(userUid).child(selectedTime.toString()).setValue(true);
+        Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
+                Toast.LENGTH_LONG).show();
+    }
+
+    public void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }
