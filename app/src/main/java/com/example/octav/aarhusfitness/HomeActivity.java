@@ -114,7 +114,7 @@ public class HomeActivity extends FragmentActivity implements
     private MarkerOptions createMarker(FitnessApiResponse.Feature feature, LatLng latLng) {
         return new MarkerOptions()
                                     .position(latLng)
-                                    .title("Fitness place")
+                                    .title("JOIN fitness place")
                                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
                                     .snippet(feature.getProperties().getNavn());
     }
