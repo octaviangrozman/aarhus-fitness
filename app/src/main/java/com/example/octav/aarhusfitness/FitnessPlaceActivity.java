@@ -1,5 +1,6 @@
 package com.example.octav.aarhusfitness;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -18,7 +19,10 @@ import com.example.octav.aarhusfitness.model.MyDate;
 import com.example.octav.aarhusfitness.model.MyTime;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
 import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
@@ -59,6 +63,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+            fetchData();
         }
 
         // ui
@@ -104,6 +109,28 @@ public class FitnessPlaceActivity extends AppCompatActivity
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private void fetchData() {
+        Calendar now = Calendar.getInstance();
+        @SuppressLint("DefaultLocale") String firebaseDate = String.format("%d|%d|%d",
+                now.get(Calendar.DAY_OF_MONTH),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.YEAR)
+        );
+        database.getReference("trainings").child(fitnessPlace).child(firebaseDate).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                TextView textViewPeopleTraining = findViewById(R.id.textViewPeopleTraining);
+                String intro = dataSnapshot.getChildrenCount() == 1 ? "1 person is" : dataSnapshot.getChildrenCount() + " people are";
+                textViewPeopleTraining.setText(intro + " training here today");
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     public void joinTraining() {
@@ -154,10 +181,24 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     private void saveTraining() {
         String userUid = mAuth.getCurrentUser().getUid();
+        if (userUid == null) {
+            Toast.makeText(this, "You need to be authenitcated!", Toast.LENGTH_SHORT).show();
+        }
+        if (selectedDate == null) {
+            Toast.makeText(this, "You need to provide a date!", Toast.LENGTH_SHORT).show();
+        }
+        if (selectedTime == null) {
+            Toast.makeText(this, "You need to provide time!", Toast.LENGTH_SHORT).show();
+        }
         Log.d("date", selectedDate.toString());
-        database.getReference("trainings").child(fitnessPlace).child(selectedDate.toString()).child(userUid).child(selectedTime.toString()).setValue(true);
-        Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
-                Toast.LENGTH_LONG).show();
+        if (userUid != null && selectedTime != null && selectedTime != null && fitnessPlace != null) {
+            database.getReference("trainings").child(fitnessPlace).child(selectedDate.toString()).child(userUid).child(selectedTime.toString()).setValue(true);
+            Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
+                    Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Fail! Try to select fitness location again!",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void startLoginActivity() {
