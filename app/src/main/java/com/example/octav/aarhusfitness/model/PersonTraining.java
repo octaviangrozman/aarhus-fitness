@@ -2,10 +2,6 @@ package com.example.octav.aarhusfitness.model;
 
 import java.io.Serializable;
 
-/**
- * Created by Octav on 1/7/2018.
- */
-
 public class PersonTraining implements Serializable {
     private String email;
     private String displayName;

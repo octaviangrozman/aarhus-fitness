@@ -1,9 +1,5 @@
 package com.example.octav.aarhusfitness.model;
 
-/**
- * Created by Octav on 1/7/2018.
- */
-
 public class MyDate {
 
     private int day;
@@ -54,8 +50,7 @@ public class MyDate {
         MyDate myDate = (MyDate) o;
 
         if (day != myDate.day) return false;
-        if (month != myDate.month) return false;
-        return year == myDate.year;
+        return month == myDate.month && year == myDate.year;
     }
 
     @Override

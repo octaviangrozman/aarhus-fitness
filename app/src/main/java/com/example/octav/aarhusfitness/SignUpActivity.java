@@ -26,8 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "UserSignUp";
-    public static final String PREFS = "prefs";
-    public static final String FITNESS_PLACE = "fitnessPlace";
+    private static final String PREFS = "prefs";
+    private static final String FITNESS_PLACE = "fitnessPlace";
 
     private FirebaseAuth mAuth;
     private FirebaseDatabase database;
@@ -56,10 +56,7 @@ public class SignUpActivity extends AppCompatActivity {
         passwordEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    return true;
-                }
-                return false;
+                return id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL;
             }
         });
     }
@@ -68,7 +65,7 @@ public class SignUpActivity extends AppCompatActivity {
         createUser(String.valueOf(emailAutoCompleteTextView.getText()), String.valueOf(passwordEditText.getText()));
     }
 
-    public void createUser(String email, String password) {
+    private void createUser(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -79,7 +76,6 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
                             saveUserInDatabase(user);
-                            Log.d("USER", user.toString());
                             Toast.makeText(SignUpActivity.this, "Your account has been succesfully created",
                                     Toast.LENGTH_SHORT).show();
                             startNextActivity();
@@ -94,10 +90,10 @@ public class SignUpActivity extends AppCompatActivity {
                 });
     }
 
-    public void startNextActivity() {
+    private void startNextActivity() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         String fitnessPlace = prefs.getString(FITNESS_PLACE, null);
-        if(fitnessPlace != null) {
+        if (fitnessPlace != null) {
             Intent intent = new Intent(SignUpActivity.this, FitnessPlaceActivity.class);
             intent.putExtra(FITNESS_PLACE, fitnessPlace);
             startActivity(intent);
@@ -107,7 +103,7 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    public void saveUserInDatabase(FirebaseUser user) {
+    private void saveUserInDatabase(FirebaseUser user) {
         PersonTraining userDetails = new PersonTraining(
                 user.getEmail(),
                 user.getDisplayName(),

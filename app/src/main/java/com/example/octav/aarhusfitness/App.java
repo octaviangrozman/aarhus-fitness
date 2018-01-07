@@ -16,12 +16,12 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
-        fitnessApi = createFitnessApi(BASE_OPENDATA_URL);
+        fitnessApi = createFitnessApi();
     }
 
-    private FitnessApi createFitnessApi(String baseOpendataUrl) {
+    private FitnessApi createFitnessApi() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(baseOpendataUrl)
+                .baseUrl(App.BASE_OPENDATA_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         return retrofit.create(FitnessApi.class);

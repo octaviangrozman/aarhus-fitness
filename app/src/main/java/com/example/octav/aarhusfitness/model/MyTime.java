@@ -1,9 +1,5 @@
 package com.example.octav.aarhusfitness.model;
 
-/**
- * Created by Octav on 1/7/2018.
- */
-
 public class MyTime {
     private int hour;
     private int minute;
@@ -52,8 +48,7 @@ public class MyTime {
         MyTime myTime = (MyTime) o;
 
         if (hour != myTime.hour) return false;
-        if (minute != myTime.minute) return false;
-        return second == myTime.second;
+        return minute == myTime.minute && second == myTime.second;
     }
 
     @Override

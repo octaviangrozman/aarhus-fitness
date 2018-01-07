@@ -31,8 +31,6 @@ public class PeopleTrainingActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseDatabase database;
-    private String fitnessPlace;
-    private String firebaseDate;
 
     private RecyclerView recyclerView;
     private List<PersonTraining> peopleTraining;
@@ -66,8 +64,8 @@ public class PeopleTrainingActivity extends AppCompatActivity {
         // intent extras (params)
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
-            firebaseDate = getIntent().getExtras().getString("firebaseDate");
+            String fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+            String firebaseDate = getIntent().getExtras().getString("firebaseDate");
             fetchData(fitnessPlace, firebaseDate);
         }
     }
@@ -104,9 +102,9 @@ public class PeopleTrainingActivity extends AppCompatActivity {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
-                    for (DataSnapshot userIdSnapshot :dataSnapshot.getChildren()) {
+                    for (DataSnapshot userIdSnapshot : dataSnapshot.getChildren()) {
                         userIdTime.put(userIdSnapshot.getKey(), userIdSnapshot.getValue(String.class));
-                    };
+                    }
                     Iterator it = userIdTime.entrySet().iterator();
                     while (it.hasNext()) {
                         final Map.Entry pair = (Map.Entry) it.next();
@@ -115,7 +113,9 @@ public class PeopleTrainingActivity extends AppCompatActivity {
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.getValue() != null) {
                                     PersonTraining personTraining = dataSnapshot.getValue(PersonTraining.class);
-                                    personTraining.setTime(String.valueOf(pair.getValue()));
+                                    if (personTraining != null) {
+                                        personTraining.setTime(String.valueOf(pair.getValue()));
+                                    }
                                     peopleTraining.add(personTraining);
                                     Log.i("peopleTraining", peopleTraining.toString());
                                     recyclerView.getAdapter().notifyDataSetChanged();
@@ -139,7 +139,7 @@ public class PeopleTrainingActivity extends AppCompatActivity {
         });
     }
 
-    public void startMapActivity() {
+    private void startMapActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }

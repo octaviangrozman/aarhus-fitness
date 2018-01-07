@@ -6,12 +6,12 @@
         android:id="@+id/action_map"
         android:icon="@drawable/map"
         android:title="@string/action_map"
-        app:showAsAction="withText"/>
+        app:showAsAction="withText" />
 
     <item
         android:id="@+id/action_account"
         android:icon="@drawable/user"
         android:title="@string/account"
-        app:showAsAction="never"/>
+        app:showAsAction="never" />
 
 </menu>

@@ -32,18 +32,17 @@ import retrofit2.Response;
 public class HomeActivity extends FragmentActivity implements
         OnMapReadyCallback {
 
-    public static final double AARHUS_LATITUDE = 56.162939;
-    public static final double AARHUS_LONGITUDE = 10.203921;
-    public static final int MAP_ZOOM = 10;
+    private static final double AARHUS_LATITUDE = 56.162939;
+    private static final double AARHUS_LONGITUDE = 10.203921;
+    private static final int MAP_ZOOM = 10;
     private GoogleMap mMap;
-    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -113,10 +112,10 @@ public class HomeActivity extends FragmentActivity implements
     @NonNull
     private MarkerOptions createMarker(FitnessApiResponse.Feature feature, LatLng latLng) {
         return new MarkerOptions()
-                                    .position(latLng)
-                                    .title("JOIN fitness place")
-                                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
-                                    .snippet(feature.getProperties().getNavn());
+                .position(latLng)
+                .title("JOIN fitness place")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
+                .snippet(feature.getProperties().getNavn());
     }
 
 }

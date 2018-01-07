@@ -31,10 +31,10 @@ import java.util.Calendar;
 
 public class FitnessPlaceActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener,
-            TimePickerDialog.OnTimeSetListener {
+        TimePickerDialog.OnTimeSetListener {
 
     private FirebaseAuth mAuth;
-    FirebaseDatabase database;
+    private FirebaseDatabase database;
     private String fitnessPlace;
     private FirebaseUser currentUser;
     private MyDate selectedDate;
@@ -68,7 +68,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
         fetchData();
 
         // ui
-        TextView textViewFitnessPlace = (TextView) findViewById(R.id.textViewFitnessPlace);
+        TextView textViewFitnessPlace = findViewById(R.id.textViewFitnessPlace);
         textViewFitnessPlace.setText(fitnessPlace);
 
         Button buttonJoin = findViewById(R.id.buttonJoin);
@@ -142,7 +142,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
         );
     }
 
-    public void joinTraining() {
+    private void joinTraining() {
         showDatePicker();
     }
 
@@ -174,7 +174,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = "You picked the following date: "+dayOfMonth+"/"+(monthOfYear+1)+"/"+year;
+        String date = "You picked the following date: " + dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
         Log.i("DATEPICKER", date);
         selectedDate = new MyDate(dayOfMonth, monthOfYear, year);
         showTimePicker();
@@ -182,7 +182,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     @Override
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-        String time = "You picked the following time: "+hourOfDay+"h"+minute+"m"+second;
+        String time = "You picked the following time: " + hourOfDay + "h" + minute + "m" + second;
         Log.i("TIMEPICKER", time);
         selectedTime = new MyTime(hourOfDay, minute, second);
         saveTraining();
@@ -191,39 +191,39 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     private void saveTraining() {
         FirebaseUser user = mAuth.getCurrentUser();
-        String userUid = user.getUid();
+        if (user != null) {
+            String userUid = user.getUid();
 
-        if (userUid == null) {
-            Toast.makeText(this, "You need to be authenitcated!", Toast.LENGTH_SHORT).show();
-        }
-        if (selectedDate == null) {
-            Toast.makeText(this, "You need to provide a date!", Toast.LENGTH_SHORT).show();
-        }
-        if (selectedTime == null) {
-            Toast.makeText(this, "You need to provide time!", Toast.LENGTH_SHORT).show();
-        }
-        Log.d("date", selectedDate.toString());
-        if (userUid != null && selectedTime != null && selectedTime != null && fitnessPlace != null) {
-            DatabaseReference userRef = database.getReference("trainings")
-                    .child(fitnessPlace)
-                    .child(selectedDate.toString())
-                    .child(userUid);
-            Log.i("TIME", selectedTime.toString());
-            userRef.setValue(selectedTime.toString());
-            Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Fail! Try to select fitness location again!",
-                    Toast.LENGTH_SHORT).show();
+            if (selectedDate == null) {
+                Toast.makeText(this, "You need to provide a date!", Toast.LENGTH_SHORT).show();
+            }
+
+            if (selectedTime == null) {
+                Toast.makeText(this, "You need to provide time!", Toast.LENGTH_SHORT).show();
+            }
+            Log.d("date", selectedDate.toString());
+            if (selectedTime != null && selectedTime != null && fitnessPlace != null) {
+                DatabaseReference userRef = database.getReference("trainings")
+                        .child(fitnessPlace)
+                        .child(selectedDate.toString())
+                        .child(userUid);
+                Log.i("TIME", selectedTime.toString());
+                userRef.setValue(selectedTime.toString());
+                Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Fail! Try to select fitness location again!",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
-    public void startMapActivity() {
+    private void startMapActivity() {
         Intent intent = new Intent(this, HomeActivity.class);
         startActivity(intent);
     }
 
-    public void startLoginActivity() {
+    private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

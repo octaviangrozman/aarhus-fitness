@@ -15,7 +15,8 @@
         android:layout_alignParentTop="true"
         android:layout_centerVertical="true"
         app:srcCompat="@drawable/ic_account_circle_black_24dp"
-        tools:ignore="VectorDrawableCompat" />
+        tools:ignore="VectorDrawableCompat"
+        android:contentDescription="TODO" />
 
     <TextView
         android:id="@+id/person_email"
@@ -32,8 +33,7 @@
         android:paddingLeft="20dp"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/person_email"
-        android:text="Time"
-        />
+        android:text="Time" />
 
 
 </RelativeLayout>

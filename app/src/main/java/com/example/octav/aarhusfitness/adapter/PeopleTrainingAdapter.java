@@ -12,13 +12,9 @@ import com.example.octav.aarhusfitness.model.PersonTraining;
 
 import java.util.List;
 
-/**
- * Created by Octav on 1/7/2018.
- */
-
 public class PeopleTrainingAdapter extends RecyclerView.Adapter<PeopleTrainingAdapter.ViewHolder> {
 
-    private List<PersonTraining> people;
+    private final List<PersonTraining> people;
 
     public PeopleTrainingAdapter(List<PersonTraining> people) {
         this.people = people;
@@ -45,9 +41,9 @@ public class PeopleTrainingAdapter extends RecyclerView.Adapter<PeopleTrainingAd
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView personPhoto;
-        TextView personEmail;
-        TextView trainingTime;
+        final ImageView personPhoto;
+        final TextView personEmail;
+        final TextView trainingTime;
 
         ViewHolder(View itemView) {
             super(itemView);

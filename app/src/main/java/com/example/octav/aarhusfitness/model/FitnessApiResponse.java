@@ -5,10 +5,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
-/**
- * Created by Octav on 1/3/2018.
- */
-
 public class FitnessApiResponse {
 
     @Override

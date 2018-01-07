@@ -34,8 +34,8 @@ import com.google.firebase.database.FirebaseDatabase;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "UserSignIn";
-    public static final String PREFS = "prefs";
-    public static final String FITNESS_PLACE = "fitnessPlace";
+    private static final String PREFS = "prefs";
+    private static final String FITNESS_PLACE = "fitnessPlace";
     private static final int RC_SIGN_IN = 77;
 
     // ui
@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     // Firebase
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
-    FirebaseDatabase database;
+    private FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,7 +73,7 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.password);
         progressBar = findViewById(R.id.progress_bar);
 
-        TextView signUpTextView = (TextView) findViewById(R.id.sign_up_text_view);
+        TextView signUpTextView = findViewById(R.id.sign_up_text_view);
         signUpTextView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         // Check for existing Google Sign In account, if the user is already signed in
         // the GoogleSignInAccount will be non-null.
-                GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
 //                Intent intent = new Intent(LoginActivity.this, FitnessPlaceActivity.class);
 //                startActivity(intent);
     }
@@ -106,7 +106,7 @@ public class LoginActivity extends AppCompatActivity {
         signIn(String.valueOf(emailAutoCompleteTextView.getText()), String.valueOf(passwordEditText.getText()));
     }
 
-    public void signIn(String email, String password) {
+    private void signIn(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -129,10 +129,10 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    public void startNextActivity() {
+    private void startNextActivity() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
         String fitnessPlace = prefs.getString(FITNESS_PLACE, null);
-        if(fitnessPlace != null) {
+        if (fitnessPlace != null) {
             Intent intent = new Intent(LoginActivity.this, FitnessPlaceActivity.class);
             intent.putExtra(FITNESS_PLACE, fitnessPlace);
             startActivity(intent);
@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void signInWithGoogle() {
+    private void signInWithGoogle() {
         Log.i("GOOGLE", "got here");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    public void saveUserInDatabase(FirebaseUser user) {
+    private void saveUserInDatabase(FirebaseUser user) {
         PersonTraining userDetails = new PersonTraining(
                 user.getEmail(),
                 user.getDisplayName(),
