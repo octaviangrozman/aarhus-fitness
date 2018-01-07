@@ -60,7 +60,7 @@
         android:layout_marginTop="-20dp"
         android:background="@color/colorPrimary"
         android:paddingHorizontal="20dp"
-        android:text="JOIN TODAY"
+        android:text="JOIN"
         android:textColor="#fff"
         android:textSize="22sp"
         app:layout_constraintBottom_toBottomOf="parent"

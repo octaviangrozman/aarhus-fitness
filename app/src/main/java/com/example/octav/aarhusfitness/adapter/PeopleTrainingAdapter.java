@@ -33,7 +33,6 @@ public class PeopleTrainingAdapter extends RecyclerView.Adapter<PeopleTrainingAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         PersonTraining person = people.get(position);
-        holder.personName.setText(person.getDisplayName());
         holder.personEmail.setText(person.getEmail());
         holder.trainingTime.setText(person.getTime());
     }
@@ -46,14 +45,12 @@ public class PeopleTrainingAdapter extends RecyclerView.Adapter<PeopleTrainingAd
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        TextView personName;
         ImageView personPhoto;
         TextView personEmail;
         TextView trainingTime;
 
         ViewHolder(View itemView) {
             super(itemView);
-            personName = itemView.findViewById(R.id.person_name);
             personPhoto = itemView.findViewById(R.id.person_photo);
             personEmail = itemView.findViewById(R.id.person_email);
             trainingTime = itemView.findViewById(R.id.training_time);

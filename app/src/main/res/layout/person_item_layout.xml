@@ -18,20 +18,11 @@
         tools:ignore="VectorDrawableCompat" />
 
     <TextView
-        android:id="@+id/person_name"
-        android:layout_width="100dp"
+        android:id="@+id/person_email"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toEndOf="@+id/person_photo"
-        android:text="Name"
-        android:textColor="@color/textColor" />
-
-    <TextView
-        android:id="@+id/person_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/person_name"
         android:text="Email" />
 
     <TextView
