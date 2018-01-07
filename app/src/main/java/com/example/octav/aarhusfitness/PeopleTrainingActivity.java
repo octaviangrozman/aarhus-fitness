@@ -29,13 +29,13 @@ import java.util.Map;
 
 public class PeopleTrainingActivity extends AppCompatActivity {
 
-    FirebaseAuth auth;
-    FirebaseDatabase database;
+    private FirebaseAuth auth;
+    private FirebaseDatabase database;
     private String fitnessPlace;
     private String firebaseDate;
 
-    RecyclerView recyclerView;
-    List<PersonTraining> peopleTraining;
+    private RecyclerView recyclerView;
+    private List<PersonTraining> peopleTraining;
 
 
     @Override

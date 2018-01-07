@@ -15,11 +15,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.octav.aarhusfitness.model.PersonTraining;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
@@ -28,6 +30,7 @@ public class SignUpActivity extends AppCompatActivity {
     public static final String FITNESS_PLACE = "fitnessPlace";
 
     private FirebaseAuth mAuth;
+    private FirebaseDatabase database;
 
     // ui
     private AutoCompleteTextView emailAutoCompleteTextView;
@@ -41,6 +44,8 @@ public class SignUpActivity extends AppCompatActivity {
 
         // firebase auth
         mAuth = FirebaseAuth.getInstance();
+        // firebase database
+        database = FirebaseDatabase.getInstance();
 
         // init ui elements
         // Set up the login form.
@@ -73,6 +78,7 @@ public class SignUpActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            saveUserInDatabase(user);
                             Log.d("USER", user.toString());
                             Toast.makeText(SignUpActivity.this, "Your account has been succesfully created",
                                     Toast.LENGTH_SHORT).show();
@@ -99,5 +105,17 @@ public class SignUpActivity extends AppCompatActivity {
             Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
             startActivity(intent);
         }
+    }
+
+    public void saveUserInDatabase(FirebaseUser user) {
+        PersonTraining userDetails = new PersonTraining(
+                user.getEmail(),
+                user.getDisplayName(),
+                String.valueOf(user.getPhotoUrl()),
+                user.getPhoneNumber()
+        );
+
+        database.getReference("users")
+                .child(user.getUid()).setValue(userDetails);
     }
 }
