@@ -3,7 +3,7 @@
     <string name="title_activity_fitness_place">FitnessPlaceActivity</string>
     <string name="action_map">See map</string>
     <string name="title_activity_login">Sign in</string>
-    <string name="account">Your Account</string>
+    <string name="account">Sign out</string>
 
     <!-- Strings related to sign in -->
     <string name="prompt_email">Email</string>

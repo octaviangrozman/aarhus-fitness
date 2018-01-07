@@ -21,6 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.wdullaer.materialdatetimepicker.date.DatePickerDialog;
@@ -34,7 +35,7 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     private FirebaseAuth mAuth;
     FirebaseDatabase database;
-    private String fitnessPlace = "";
+    private String fitnessPlace;
     private FirebaseUser currentUser;
     private MyDate selectedDate;
     private MyTime selectedTime;
@@ -63,8 +64,8 @@ public class FitnessPlaceActivity extends AppCompatActivity
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
             fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
-            fetchData();
         }
+        fetchData();
 
         // ui
         TextView textViewFitnessPlace = (TextView) findViewById(R.id.textViewFitnessPlace);
@@ -105,6 +106,10 @@ public class FitnessPlaceActivity extends AppCompatActivity
                 Intent intent = new Intent(this, HomeActivity.class);
                 startActivity(intent);
                 return true;
+            case R.id.action_account:
+                mAuth.signOut();
+                Toast.makeText(this, "You are signed out", Toast.LENGTH_SHORT).show();
+                startMapActivity();
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -112,18 +117,12 @@ public class FitnessPlaceActivity extends AppCompatActivity
     }
 
     private void fetchData() {
-        Calendar now = Calendar.getInstance();
-        @SuppressLint("DefaultLocale") String firebaseDate = String.format("%d|%d|%d",
-                now.get(Calendar.DAY_OF_MONTH),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.YEAR)
-        );
-        database.getReference("trainings").child(fitnessPlace).child(firebaseDate).addValueEventListener(new ValueEventListener() {
+        database.getReference("trainings").child(fitnessPlace).child(getFirebaseDate()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                TextView textViewPeopleTraining = findViewById(R.id.textViewPeopleTraining);
-                String intro = dataSnapshot.getChildrenCount() == 1 ? "1 person is" : dataSnapshot.getChildrenCount() + " people are";
-                textViewPeopleTraining.setText(intro + " training here today");
+                TextView buttonPeopleTraining = findViewById(R.id.buttonPeopleTraining);
+                String intro = dataSnapshot.getChildrenCount() == 1 ? "1 person trains" : dataSnapshot.getChildrenCount() + " people train";
+                buttonPeopleTraining.setText(intro + " here today");
             }
 
             @Override
@@ -131,6 +130,16 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
             }
         });
+    }
+
+    @SuppressLint("DefaultLocale")
+    private String getFirebaseDate() {
+        Calendar now = Calendar.getInstance();
+        return String.format("%d|%d|%d",
+                now.get(Calendar.DAY_OF_MONTH),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.YEAR)
+        );
     }
 
     public void joinTraining() {
@@ -177,10 +186,13 @@ public class FitnessPlaceActivity extends AppCompatActivity
         Log.i("TIMEPICKER", time);
         selectedTime = new MyTime(hourOfDay, minute, second);
         saveTraining();
+        fetchData();
     }
 
     private void saveTraining() {
-        String userUid = mAuth.getCurrentUser().getUid();
+        FirebaseUser user = mAuth.getCurrentUser();
+        String userUid = user.getUid();
+
         if (userUid == null) {
             Toast.makeText(this, "You need to be authenitcated!", Toast.LENGTH_SHORT).show();
         }
@@ -192,7 +204,12 @@ public class FitnessPlaceActivity extends AppCompatActivity
         }
         Log.d("date", selectedDate.toString());
         if (userUid != null && selectedTime != null && selectedTime != null && fitnessPlace != null) {
-            database.getReference("trainings").child(fitnessPlace).child(selectedDate.toString()).child(userUid).child(selectedTime.toString()).setValue(true);
+            DatabaseReference userRef = database.getReference("trainings")
+                    .child(fitnessPlace)
+                    .child(selectedDate.toString())
+                    .child(userUid);
+            Log.i("TIME", selectedTime.toString());
+            userRef.setValue(selectedTime.toString());
             Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
                     Toast.LENGTH_SHORT).show();
         } else {
@@ -201,8 +218,20 @@ public class FitnessPlaceActivity extends AppCompatActivity
         }
     }
 
+    public void startMapActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        startActivity(intent);
+    }
+
     public void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void startPeopleTrainingActivity(View view) {
+        Intent intent = new Intent(this, PeopleTrainingActivity.class);
+        intent.putExtra("fitnessPlace", fitnessPlace);
+        intent.putExtra("firebaseDate", getFirebaseDate());
         startActivity(intent);
     }
 }

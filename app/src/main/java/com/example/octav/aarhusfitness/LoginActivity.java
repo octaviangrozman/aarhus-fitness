@@ -15,6 +15,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.octav.aarhusfitness.model.PersonTraining;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -28,6 +29,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -44,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
     // Firebase
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
+    FirebaseDatabase database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,9 @@ public class LoginActivity extends AppCompatActivity {
 
         // Firebase auth
         mAuth = FirebaseAuth.getInstance();
+        // firebase database
+        database = FirebaseDatabase.getInstance();
+
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -110,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            saveUserInDatabase(user);
                             startNextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -172,6 +179,7 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            saveUserInDatabase(user);
                             startNextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -180,6 +188,18 @@ public class LoginActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.GONE);
                     }
                 });
+    }
+
+    public void saveUserInDatabase(FirebaseUser user) {
+        PersonTraining userDetails = new PersonTraining(
+                user.getEmail(),
+                user.getDisplayName(),
+                String.valueOf(user.getPhotoUrl()),
+                user.getPhoneNumber()
+        );
+
+        database.getReference("users")
+                .child(user.getUid()).setValue(userDetails);
     }
 }
 

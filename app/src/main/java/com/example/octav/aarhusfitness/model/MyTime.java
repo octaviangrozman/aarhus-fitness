@@ -41,7 +41,7 @@ public class MyTime {
 
     @Override
     public String toString() {
-        return String.format("%d:%d", hour, minute);
+        return String.format("%d:%02d", hour, minute);
     }
 
     @Override

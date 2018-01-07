@@ -37,17 +37,16 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Fitness place title" />
 
-    <TextView
-        android:id="@+id/textViewPeopleTraining"
-        android:layout_width="wrap_content"
+    <Button
+        android:id="@+id/buttonPeopleTraining"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="6 people train here today"
-        android:textColor="#333"
-        android:textSize="18sp"
+        android:background="#42A5F5"
+        android:onClick="startPeopleTrainingActivity"
+        android:paddingHorizontal="20dp"
+        android:text="0 people train here today"
+        android:textColor="@color/white"
+        android:textSize="17sp"
         app:layout_constraintBottom_toTopOf="@+id/buttonJoin"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -56,12 +55,9 @@
 
     <Button
         android:id="@+id/buttonJoin"
-        android:layout_width="wrap_content"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="-20dp"
         android:background="@color/colorPrimary"
         android:paddingHorizontal="20dp"
         android:text="JOIN TODAY"
