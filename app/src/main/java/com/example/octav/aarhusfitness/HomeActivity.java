@@ -36,13 +36,14 @@ public class HomeActivity extends FragmentActivity implements
     public static final double AARHUS_LONGITUDE = 10.203921;
     public static final int MAP_ZOOM = 10;
     private GoogleMap mMap;
+    private FusedLocationProviderClient mFusedLocationClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -56,8 +57,13 @@ public class HomeActivity extends FragmentActivity implements
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
                             if (location != null) {
-                                Log.i("Location", location.getLatitude() + "" + location.getLongitude());
+                                // Logic to handle location object
+                                Log.i("LOCATION", location.toString());
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                MarkerOptions locationMarker = new MarkerOptions().position(latLng).title("You are here!");
+                                mMap.addMarker(locationMarker);
                             }
                         }
                     });
