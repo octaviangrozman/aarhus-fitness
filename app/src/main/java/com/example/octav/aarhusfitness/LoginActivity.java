@@ -15,7 +15,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.octav.aarhusfitness.model.PersonTraining;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -35,8 +34,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "UserSignIn";
     private static final String PREFS = "prefs";
-    private static final String FITNESS_PLACE = "fitnessPlace";
     private static final int RC_SIGN_IN = 77;
+    public static final String GOOGLE_SIGN_IN_FAILED_MESSAGE = "Google sign in failed";
 
     // ui
     private AutoCompleteTextView emailAutoCompleteTextView;
@@ -44,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     // Firebase
-    private FirebaseAuth mAuth;
+    private FirebaseAuth auth;
     private GoogleSignInClient mGoogleSignInClient;
     private FirebaseDatabase database;
 
@@ -54,13 +53,11 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         // Firebase auth
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         // firebase database
         database = FirebaseDatabase.getInstance();
 
 
-        // Configure sign-in to request the user's ID, email address, and basic
-        // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
@@ -95,11 +92,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//                Intent intent = new Intent(LoginActivity.this, FitnessPlaceActivity.class);
-//                startActivity(intent);
     }
 
     public void signInButtonOnClick(View view) {
@@ -108,15 +100,15 @@ public class LoginActivity extends AppCompatActivity {
 
     private void signIn(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
-        mAuth.signInWithEmailAndPassword(email, password)
+        auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            saveUserInDatabase(user);
+                            FirebaseUser user = auth.getCurrentUser();
+                            App.getFirebaseHelper().saveUserInDatabase(user);
                             startNextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -131,10 +123,10 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startNextActivity() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        String fitnessPlace = prefs.getString(FITNESS_PLACE, null);
+        String fitnessPlace = prefs.getString(App.FITNESS_PLACE_ARG, null);
         if (fitnessPlace != null) {
             Intent intent = new Intent(LoginActivity.this, FitnessPlaceActivity.class);
-            intent.putExtra(FITNESS_PLACE, fitnessPlace);
+            intent.putExtra(App.FITNESS_PLACE_ARG, fitnessPlace);
             startActivity(intent);
         } else {
             Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
@@ -143,7 +135,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signInWithGoogle() {
-        Log.i("GOOGLE", "got here");
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -161,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             } catch (ApiException e) {
                 // Google Sign In failed, update UI appropriately
-                Log.w(TAG, "Google sign in failed", e);
+                Log.w(TAG, GOOGLE_SIGN_IN_FAILED_MESSAGE, e);
             }
         }
     }
@@ -171,15 +162,15 @@ public class LoginActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
-        mAuth.signInWithCredential(credential)
+        auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            saveUserInDatabase(user);
+                            FirebaseUser user = auth.getCurrentUser();
+                            App.getFirebaseHelper().saveUserInDatabase(user);
                             startNextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
@@ -190,16 +181,5 @@ public class LoginActivity extends AppCompatActivity {
                 });
     }
 
-    private void saveUserInDatabase(FirebaseUser user) {
-        PersonTraining userDetails = new PersonTraining(
-                user.getEmail(),
-                user.getDisplayName(),
-                String.valueOf(user.getPhotoUrl()),
-                user.getPhoneNumber()
-        );
-
-        database.getReference("users")
-                .child(user.getUid()).setValue(userDetails);
-    }
 }
 

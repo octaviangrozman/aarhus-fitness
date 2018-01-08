@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -33,7 +32,18 @@ public class FitnessPlaceActivity extends AppCompatActivity
         implements DatePickerDialog.OnDateSetListener,
         TimePickerDialog.OnTimeSetListener {
 
-    private FirebaseAuth mAuth;
+    public static final String YOU_ARE_SIGNED_OUT_MESSAGE = "You are signed out";
+    public static final String DATE_PICKER_TITLE = "Pick a date for your next training";
+    public static final String DATEPICKERDIALOG = "Datepickerdialog";
+    public static final String TIME_PICKER_TITLE = "Pick a time for your next training";
+    public static final String TIMEPICKERDIALOG = "Timepickerdialog";
+    public static final String YOU_NEED_TO_PROVIDE_A_DATE_MESSAGE = "You need to provide a date!";
+    public static final String YOU_NEED_TO_PROVIDE_TIME_MESSAGE = "You need to provide time!";
+    public static final String FAIL_MESSAGE = "Fail! Try to select fitness location again!";
+    public static final String SUCCESS_MESSAGE = "You succesfully joined training";
+    public static final String ACTION_BAR_TITLE = "Fitness spot";
+
+    private FirebaseAuth auth;
     private FirebaseDatabase database;
     private String fitnessPlace;
     private FirebaseUser currentUser;
@@ -50,20 +60,18 @@ public class FitnessPlaceActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("Fitness");
+            actionBar.setTitle(ACTION_BAR_TITLE);
         }
 
-        this.invalidateOptionsMenu();
-
         // firebase auth
-        mAuth = FirebaseAuth.getInstance();
+        auth = FirebaseAuth.getInstance();
         // firebase database
         database = FirebaseDatabase.getInstance();
 
         // intent extras (params)
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
+            fitnessPlace = getIntent().getExtras().getString(App.FITNESS_PLACE_ARG);
         }
         fetchData();
 
@@ -87,13 +95,11 @@ public class FitnessPlaceActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        this.currentUser = mAuth.getCurrentUser();
+        this.currentUser = auth.getCurrentUser();
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        MenuItem accountMenuItem = menu.findItem(R.id.action_account);
-        if (accountMenuItem != null) accountMenuItem.setVisible(false);
         inflater.inflate(R.menu.toolbar, menu);
         return true;
     }
@@ -107,8 +113,8 @@ public class FitnessPlaceActivity extends AppCompatActivity
                 startActivity(intent);
                 return true;
             case R.id.action_account:
-                mAuth.signOut();
-                Toast.makeText(this, "You are signed out", Toast.LENGTH_SHORT).show();
+                auth.signOut();
+                Toast.makeText(this, YOU_ARE_SIGNED_OUT_MESSAGE, Toast.LENGTH_SHORT).show();
                 startMapActivity();
             default:
                 return super.onOptionsItemSelected(item);
@@ -117,7 +123,10 @@ public class FitnessPlaceActivity extends AppCompatActivity
     }
 
     private void fetchData() {
-        database.getReference("trainings").child(fitnessPlace).child(getFirebaseDate()).addValueEventListener(new ValueEventListener() {
+        database.getReference(App.getFirebaseHelper().TRAININGS_REF)
+                .child(fitnessPlace)
+                .child(getFirebaseDate())
+                .addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 TextView buttonPeopleTraining = findViewById(R.id.buttonPeopleTraining);
@@ -154,9 +163,9 @@ public class FitnessPlaceActivity extends AppCompatActivity
                 now.get(Calendar.MONTH),
                 now.get(Calendar.DAY_OF_MONTH)
         );
-        datePicker.setTitle("Pick a date for your next training");
+        datePicker.setTitle(DATE_PICKER_TITLE);
         datePicker.setVersion(DatePickerDialog.Version.VERSION_1);
-        datePicker.show(getFragmentManager(), "Datepickerdialog");
+        datePicker.show(getFragmentManager(), DATEPICKERDIALOG);
     }
 
     private void showTimePicker() {
@@ -167,52 +176,46 @@ public class FitnessPlaceActivity extends AppCompatActivity
                 now.get(Calendar.MINUTE),
                 false
         );
-        timePicker.setTitle("Pick a time for your next training");
+        timePicker.setTitle(TIME_PICKER_TITLE);
         timePicker.setVersion(TimePickerDialog.Version.VERSION_1);
-        timePicker.show(getFragmentManager(), "Timepickerdialog");
+        timePicker.show(getFragmentManager(), TIMEPICKERDIALOG);
     }
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
-        String date = "You picked the following date: " + dayOfMonth + "/" + (monthOfYear + 1) + "/" + year;
-        Log.i("DATEPICKER", date);
         selectedDate = new MyDate(dayOfMonth, monthOfYear, year);
         showTimePicker();
     }
 
     @Override
     public void onTimeSet(TimePickerDialog view, int hourOfDay, int minute, int second) {
-        String time = "You picked the following time: " + hourOfDay + "h" + minute + "m" + second;
-        Log.i("TIMEPICKER", time);
         selectedTime = new MyTime(hourOfDay, minute, second);
         saveTraining();
         fetchData();
     }
 
     private void saveTraining() {
-        FirebaseUser user = mAuth.getCurrentUser();
+        FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             String userUid = user.getUid();
 
             if (selectedDate == null) {
-                Toast.makeText(this, "You need to provide a date!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, YOU_NEED_TO_PROVIDE_A_DATE_MESSAGE, Toast.LENGTH_SHORT).show();
             }
 
             if (selectedTime == null) {
-                Toast.makeText(this, "You need to provide time!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, YOU_NEED_TO_PROVIDE_TIME_MESSAGE, Toast.LENGTH_SHORT).show();
             }
-            Log.d("date", selectedDate.toString());
             if (selectedTime != null && selectedTime != null && fitnessPlace != null) {
-                DatabaseReference userRef = database.getReference("trainings")
+                DatabaseReference userRef = database.getReference(App.getFirebaseHelper().TRAININGS_REF)
                         .child(fitnessPlace)
                         .child(selectedDate.toString())
                         .child(userUid);
-                Log.i("TIME", selectedTime.toString());
                 userRef.setValue(selectedTime.toString());
-                Toast.makeText(FitnessPlaceActivity.this, "You succesfully joined training",
+                Toast.makeText(FitnessPlaceActivity.this, SUCCESS_MESSAGE,
                         Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Fail! Try to select fitness location again!",
+                Toast.makeText(this, FAIL_MESSAGE,
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -230,8 +233,8 @@ public class FitnessPlaceActivity extends AppCompatActivity
 
     public void startPeopleTrainingActivity(View view) {
         Intent intent = new Intent(this, PeopleTrainingActivity.class);
-        intent.putExtra("fitnessPlace", fitnessPlace);
-        intent.putExtra("firebaseDate", getFirebaseDate());
+        intent.putExtra(App.FITNESS_PLACE_ARG, fitnessPlace);
+        intent.putExtra(App.FIREBASE_DATE_ARG, getFirebaseDate());
         startActivity(intent);
     }
 }

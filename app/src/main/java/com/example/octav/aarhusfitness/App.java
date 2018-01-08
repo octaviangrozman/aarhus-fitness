@@ -10,13 +10,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class App extends Application {
 
     private static final String BASE_OPENDATA_URL = "http://portal.opendata.dk/";
+    public static final String FITNESS_PLACE_ARG = "fitnessPlace";
+    public static final String FIREBASE_DATE_ARG = "firebaseDate";
     private static FitnessApi fitnessApi;
+    private static FirebaseHelper firebaseHelper;
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         fitnessApi = createFitnessApi();
+        firebaseHelper = new FirebaseHelper();
     }
 
     private FitnessApi createFitnessApi() {
@@ -30,4 +34,6 @@ public class App extends Application {
     public static FitnessApi getApi() {
         return fitnessApi;
     }
+    public static FirebaseHelper getFirebaseHelper() { return firebaseHelper; }
+
 }

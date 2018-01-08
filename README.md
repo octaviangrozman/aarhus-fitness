@@ -1,8 +1,7 @@
 # aarhus-fitness
 **Short description:**
 
-An android application that provides information about available fitness locations in Aarhus and allows 
-to sign up for activities on a selected schedule and location along with other people.
+An android application that provides information about all available fitness activities spots in Aarhus and allows you to see the closest fitness activities location, to sign up for activities, to select a schedule for a specific location and to see other people using the selected fitness activities spot.
 
 **Features:**
 * Use open source API data for fitness locations in Aarhus 

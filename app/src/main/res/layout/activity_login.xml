@@ -77,7 +77,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:layout_marginVertical="10dp" />
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"/>
 
             <TextView
                 android:id="@+id/sign_up_text_view"
@@ -93,7 +94,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:layout_marginVertical="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
                 android:visibility="gone" />
 
         </LinearLayout>

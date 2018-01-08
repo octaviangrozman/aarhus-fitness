@@ -15,22 +15,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.octav.aarhusfitness.model.PersonTraining;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private static final String TAG = "UserSignUp";
     private static final String PREFS = "prefs";
-    private static final String FITNESS_PLACE = "fitnessPlace";
+    public static final String SUCCESS_MESSAGE = "Your account has been succesfully created";
 
-    private FirebaseAuth mAuth;
-    private FirebaseDatabase database;
+    private FirebaseAuth auth;
 
     // ui
     private AutoCompleteTextView emailAutoCompleteTextView;
@@ -43,12 +40,9 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         // firebase auth
-        mAuth = FirebaseAuth.getInstance();
-        // firebase database
-        database = FirebaseDatabase.getInstance();
+        auth = FirebaseAuth.getInstance();
 
         // init ui elements
-        // Set up the login form.
         emailAutoCompleteTextView = findViewById(R.id.email);
         passwordEditText = findViewById(R.id.password);
         progressBar = findViewById(R.id.progress_bar);
@@ -67,16 +61,16 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void createUser(String email, String password) {
         progressBar.setVisibility(View.VISIBLE);
-        mAuth.createUserWithEmailAndPassword(email, password)
+        auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "createUserWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            saveUserInDatabase(user);
-                            Toast.makeText(SignUpActivity.this, "Your account has been succesfully created",
+                            FirebaseUser user = auth.getCurrentUser();
+                            App.getFirebaseHelper().saveUserInDatabase(user);
+                            Toast.makeText(SignUpActivity.this, SUCCESS_MESSAGE,
                                     Toast.LENGTH_SHORT).show();
                             startNextActivity();
                         } else {
@@ -92,26 +86,14 @@ public class SignUpActivity extends AppCompatActivity {
 
     private void startNextActivity() {
         SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        String fitnessPlace = prefs.getString(FITNESS_PLACE, null);
+        String fitnessPlace = prefs.getString(App.FITNESS_PLACE_ARG, null);
         if (fitnessPlace != null) {
             Intent intent = new Intent(SignUpActivity.this, FitnessPlaceActivity.class);
-            intent.putExtra(FITNESS_PLACE, fitnessPlace);
+            intent.putExtra(App.FITNESS_PLACE_ARG, fitnessPlace);
             startActivity(intent);
         } else {
             Intent intent = new Intent(SignUpActivity.this, HomeActivity.class);
             startActivity(intent);
         }
-    }
-
-    private void saveUserInDatabase(FirebaseUser user) {
-        PersonTraining userDetails = new PersonTraining(
-                user.getEmail(),
-                user.getDisplayName(),
-                String.valueOf(user.getPhotoUrl()),
-                user.getPhoneNumber()
-        );
-
-        database.getReference("users")
-                .child(user.getUid()).setValue(userDetails);
     }
 }

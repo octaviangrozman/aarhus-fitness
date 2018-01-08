@@ -6,8 +6,4 @@
     <color name="colorBlue">#64B5F6</color>
     <color name="textColor">#444</color>
     <color name="white">#fff</color>
-
-    <!--date and time picker-->
-    <color name="mdtp_accent_color">#009688</color>
-    <color name="mdtp_accent_color_dark">#00796b</color>
 </resources>

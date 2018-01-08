@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,6 +28,8 @@ import java.util.Map;
 
 public class PeopleTrainingActivity extends AppCompatActivity {
 
+    public static final String YOU_ARE_SIGNED_OUT_MESSAGE = "You are signed out";
+    public static final String ACTION_BAR_TITLE = "These people train here today";
     private FirebaseAuth auth;
     private FirebaseDatabase database;
 
@@ -41,6 +42,7 @@ public class PeopleTrainingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_people_training);
 
+        // firebase auth
         auth = FirebaseAuth.getInstance();
         // firebase database
         database = FirebaseDatabase.getInstance();
@@ -49,7 +51,7 @@ public class PeopleTrainingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("These people train here today");
+            actionBar.setTitle(ACTION_BAR_TITLE);
         }
 
         peopleTraining = new ArrayList<>();
@@ -64,8 +66,8 @@ public class PeopleTrainingActivity extends AppCompatActivity {
         // intent extras (params)
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            String fitnessPlace = getIntent().getExtras().getString("fitnessPlace");
-            String firebaseDate = getIntent().getExtras().getString("firebaseDate");
+            String fitnessPlace = getIntent().getExtras().getString(App.FITNESS_PLACE_ARG);
+            String firebaseDate = getIntent().getExtras().getString(App.FIREBASE_DATE_ARG);
             fetchData(fitnessPlace, firebaseDate);
         }
     }
@@ -88,7 +90,7 @@ public class PeopleTrainingActivity extends AppCompatActivity {
                 return true;
             case R.id.action_account:
                 auth.signOut();
-                Toast.makeText(this, "You are signed out", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, YOU_ARE_SIGNED_OUT_MESSAGE, Toast.LENGTH_SHORT).show();
                 startMapActivity();
             default:
                 return super.onOptionsItemSelected(item);
@@ -98,7 +100,7 @@ public class PeopleTrainingActivity extends AppCompatActivity {
 
     private void fetchData(String fitnessPlace, String firebaseDate) {
         final HashMap<String, String> userIdTime = new HashMap<>();
-        database.getReference("trainings").child(fitnessPlace).child(firebaseDate).addValueEventListener(new ValueEventListener() {
+        database.getReference(App.getFirebaseHelper().TRAININGS_REF).child(fitnessPlace).child(firebaseDate).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChildren()) {
@@ -108,7 +110,9 @@ public class PeopleTrainingActivity extends AppCompatActivity {
                     Iterator it = userIdTime.entrySet().iterator();
                     while (it.hasNext()) {
                         final Map.Entry pair = (Map.Entry) it.next();
-                        database.getReference("users").child(String.valueOf(pair.getKey())).addValueEventListener(new ValueEventListener() {
+                        database.getReference(App.getFirebaseHelper().USERS_REF)
+                                .child(String.valueOf(pair.getKey()))
+                                .addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
                                 if (dataSnapshot.getValue() != null) {
@@ -117,7 +121,6 @@ public class PeopleTrainingActivity extends AppCompatActivity {
                                         personTraining.setTime(String.valueOf(pair.getValue()));
                                     }
                                     peopleTraining.add(personTraining);
-                                    Log.i("peopleTraining", peopleTraining.toString());
                                     recyclerView.getAdapter().notifyDataSetChanged();
                                 }
                             }

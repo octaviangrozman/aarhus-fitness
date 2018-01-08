@@ -35,6 +35,7 @@ public class HomeActivity extends FragmentActivity implements
     private static final double AARHUS_LATITUDE = 56.162939;
     private static final double AARHUS_LONGITUDE = 10.203921;
     private static final int MAP_ZOOM = 10;
+    public static final String JOIN_FITNESS_PLACE = "JOIN fitness spot";
     private GoogleMap mMap;
 
     @Override
@@ -42,43 +43,22 @@ public class HomeActivity extends FragmentActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
-            Log.i("permission", "requesting");
-        } else {
-            mFusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            // Got last known location. In some rare situations this can be null.
-                            if (location != null) {
-                                // Logic to handle location object
-                                Log.i("LOCATION", location.toString());
-                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                                MarkerOptions locationMarker = new MarkerOptions().position(latLng).title("You are here!");
-                                mMap.addMarker(locationMarker);
-                            }
-                        }
-                    });
-        }
     }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        getLastLocation();
+
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(HomeActivity.this, FitnessPlaceActivity.class);
-                intent.putExtra("fitnessPlace", marker.getSnippet());
+                intent.putExtra(App.FITNESS_PLACE_ARG, marker.getSnippet());
                 startActivity(intent);
             }
         });
@@ -113,9 +93,32 @@ public class HomeActivity extends FragmentActivity implements
     private MarkerOptions createMarker(FitnessApiResponse.Feature feature, LatLng latLng) {
         return new MarkerOptions()
                 .position(latLng)
-                .title("JOIN fitness place")
+                .title(JOIN_FITNESS_PLACE)
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.fitness_icon))
                 .snippet(feature.getProperties().getNavn());
+    }
+
+    private void getLastLocation() {
+        FusedLocationProviderClient mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 42);
+        } else {
+            mFusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            // Got last known location. In some rare situations this can be null.
+                            if (location != null) {
+                                // Logic to handle location object
+                                LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+                                MarkerOptions locationMarker = new MarkerOptions().position(latLng).title("You are here!");
+                                mMap.addMarker(locationMarker);
+                            }
+                        }
+                    });
+        }
     }
 
 }

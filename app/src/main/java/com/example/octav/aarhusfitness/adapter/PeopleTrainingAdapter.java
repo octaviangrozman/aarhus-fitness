@@ -30,7 +30,7 @@ public class PeopleTrainingAdapter extends RecyclerView.Adapter<PeopleTrainingAd
     public void onBindViewHolder(ViewHolder holder, int position) {
         PersonTraining person = people.get(position);
         holder.personEmail.setText(person.getEmail());
-        holder.trainingTime.setText(person.getTime());
+        holder.trainingTime.setText("trains at " + person.getTime());
     }
 
     @Override
